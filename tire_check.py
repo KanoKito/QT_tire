@@ -1,13 +1,13 @@
 import sys
 import time
 import glob
-import os
 import chardet
 import html
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QFileDialog, QLineEdit, QTextEdit,
                              QLabel, QMessageBox, QTabWidget)
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
+
 
 def detect_encoding(file_path):
     """Определение кодировки файла"""
@@ -17,6 +17,7 @@ def detect_encoding(file_path):
             return 'utf-8'
         result = chardet.detect(rawdata)
         return result['encoding'] if result['confidence'] > 0.5 else 'windows-1251'
+
 
 def read_data(path, encoding):
     """Чтение файлов в бинарном режиме с ручным декодированием"""
@@ -29,6 +30,7 @@ def read_data(path, encoding):
         except Exception as e:
             print(f"Ошибка чтения файла {filename}: {str(e)}")
             continue
+
 
 class Worker(QObject):
     finished = pyqtSignal()
@@ -94,8 +96,10 @@ class Worker(QObject):
             self.progress.emit(f"Ошибка: {str(e)}")
         finally:
             elapsed = time.time() - start_time
-            self.result.emit(len(tire_names), len(self.kiz), elapsed, self.encoding)
+            self.result.emit(
+                len(tire_names), len(self.kiz), elapsed, self.encoding)
             self.finished.emit()
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -142,7 +146,8 @@ class MainWindow(QWidget):
         kiz_layout = QVBoxLayout()
         self.kiz_list = QTextEdit()
         self.kiz_list.setReadOnly(True)
-        kiz_layout.addWidget(QLabel("Коды идентификации (первые 500 записей):"))
+        kiz_layout.addWidget(QLabel(
+            "Коды идентификации (первые 500 записей):"))
         kiz_layout.addWidget(self.kiz_list)
         self.kiz_tab.setLayout(kiz_layout)
 
@@ -201,6 +206,7 @@ class MainWindow(QWidget):
             f"Кодировка: {encoding} | "
             f"Уникальные: {unique} | Всего КИЗ: {total}"
         )
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
